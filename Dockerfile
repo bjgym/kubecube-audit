@@ -8,7 +8,10 @@ WORKDIR /workspace
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GO111MODULE=on go build -mod=vendor -a -o audit main.go
+# TARGETARCH is set automatically by buildx; a plain native build leaves it
+# empty, which makes GOARCH fall back to the build host's architecture.
+ARG TARGETARCH
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=$TARGETARCH GO111MODULE=on go build -mod=vendor -a -o audit main.go
 
 FROM alpine:3.13.4
 WORKDIR /
